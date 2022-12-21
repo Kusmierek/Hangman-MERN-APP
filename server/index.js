@@ -8,8 +8,14 @@ import userRouter from './routes/user.route.js';
 import wordRouter from './routes/word.route.js';
 
 dotenv.config();
+const corsOptions = {
+  origin: '*',
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
 
 const app = express();
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 mongoose.set('strictQuery', false);
 
@@ -17,7 +23,7 @@ console.log(process.env.MONGO_PATH);
 
 mongoose.connect(process.env.MONGO_PATH, (err) => {
   if (err) {
-    console.log('error in connection');
+    console.log(err);
   } else {
     console.log('mongodb is connected');
   }
