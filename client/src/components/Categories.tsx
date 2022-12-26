@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export interface category {
   id: String;
@@ -24,7 +25,13 @@ const Categories = () => {
   return (
     <div className="flex  flex-wrap gap-4 rounded m-10 bg">
       {categories.map((el, i) => (
-        <div className="w-1/5 h-80 bg-blue-300 grow rounded-lg">{el.name}</div>
+        <Link
+          to="/game"
+          key={i}
+          className="w-1/5 h-80 bg-blue-300 grow rounded-lg"
+        >
+          <div>{el.name}</div>
+        </Link>
       ))}
     </div>
   );

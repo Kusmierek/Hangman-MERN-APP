@@ -1,3 +1,5 @@
+import Game from './Game';
+
 const MainPage = () => {
   return (
     <section className="main">
