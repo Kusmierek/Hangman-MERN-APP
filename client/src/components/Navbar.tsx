@@ -16,12 +16,16 @@ const Navbar = () => {
           </span>
         </a>
         <div className="flex md:order-2 space-x-3">
-          <button type="button" className="nav-button ">
-            Sign Up
-          </button>
-          <button type="button" className="nav-button ">
-            Login
-          </button>
+          <Link to="/sign-up" className="nav-el">
+            <button type="button" className="nav-button ">
+              Sign Up
+            </button>
+          </Link>
+          <Link to="/login" className="nav-el">
+            <button type="button" className="nav-button ">
+              Login
+            </button>
+          </Link>
           <button
             data-collapse-toggle="navbar-cta"
             type="button"

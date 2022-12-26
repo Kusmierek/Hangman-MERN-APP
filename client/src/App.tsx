@@ -3,8 +3,10 @@ import { Route, Routes } from 'react-router-dom';
 import reactLogo from './assets/react.svg';
 import Categories from './components/Categories';
 import Game from './components/Game';
+import Login from './components/Login';
 import MainPage from './components/MainPage';
 import Navbar from './components/Navbar';
+import SignUp from './components/SignUp';
 import './index.css';
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/categories" element={<Categories />} />
         <Route path="/game" element={<Game />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<SignUp />} />
       </Routes>
     </div>
   );
