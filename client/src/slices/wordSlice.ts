@@ -49,9 +49,6 @@ const hangmanGameWordSlice = createSlice({
     addDisabled: (state, action) => {
       state.disabled = [...state.disabled, action.payload];
     },
-    errors: (state, aciton) => {
-      return;
-    },
   },
 });
 

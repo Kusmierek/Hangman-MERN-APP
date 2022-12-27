@@ -6,6 +6,7 @@ import cors from 'cors';
 import categoryRouter from './routes/category.route.js';
 import userRouter from './routes/user.route.js';
 import wordRouter from './routes/word.route.js';
+import authRouter from './routes/auth.route.js';
 
 dotenv.config();
 const corsOptions = {
@@ -32,5 +33,5 @@ mongoose.connect(process.env.MONGO_PATH, (err) => {
 app.use('/api/cat', categoryRouter);
 app.use('/api/user', userRouter);
 app.use('/api/word', wordRouter);
-
+app.use('/api/authentication', authRouter);
 app.listen(3000);
