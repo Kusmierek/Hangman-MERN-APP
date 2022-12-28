@@ -1,16 +1,14 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { SignUpType } from '../authentication/auth';
 import * as yup from 'yup';
-
-interface SignUpType {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { registerPost } from '../authentication/auth';
+import { useSelector, useDispatch } from 'react-redux';
+import { StateType } from '../store';
+import { loggedIn, loginType } from '../slices/logginSlice';
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required('Name is required').min(3).max(16),
+  username: yup.string().required('Name is required').min(3).max(16),
   email: yup.string().email('Email is invalid').required('Email is required'),
   password: yup
     .string()
@@ -24,6 +22,11 @@ const validationSchema = yup.object().shape({
 });
 
 const SignUp = () => {
+  const userState = useSelector<StateType, loginType>(
+    (state) => state.persistedReducer.login
+  );
+
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -33,9 +36,21 @@ const SignUp = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit = (data: SignUpType) => {
+  const onSubmit = (data: SignUpType, errors: any) => {
+    console.log(errors);
+    console.log('123');
+
     console.log(data);
+
+    registerPost(data).then((response: any) => {
+      dispatch(loggedIn(response.User));
+      console.log(response.User);
+      console.log(userState);
+    });
   };
+
+  console.log(errors);
+  console.log(userState);
 
   return (
     <div className="flex flex-col items-center sign-up pt-6 sm:justify-center sm:pt-0 ">
@@ -58,7 +73,11 @@ const SignUp = () => {
               Name
             </label>
             <div className="flex flex-col items-start">
-              <input type="text" className="form-input" {...register('name')} />
+              <input
+                type="text"
+                className="form-input"
+                {...register('username')}
+              />
             </div>
           </div>
           <div className="mt-4">

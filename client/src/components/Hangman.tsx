@@ -14,6 +14,8 @@ const Hangman = () => {
     (state) => state.hangmanGameWord
   );
 
+  console.log(gameState);
+
   const dispatch = useDispatch();
   const randomWord = 'ANGLIA';
 
