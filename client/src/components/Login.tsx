@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 import { StateType } from '../store';
 import { loggedIn, loginType } from '../slices/logginSlice';
-import { SignUpType, loginPost } from '../authentication/auth';
+import { SignUpType, useLogin } from '../authentication/auth';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Email is invalid').required('Email is required'),
@@ -19,7 +19,7 @@ const Login = () => {
   const loginState = useSelector<StateType, loginType>(
     (state) => state.persistedReducer.login
   );
-
+  const { loginPost } = useLogin();
   const dispatch = useDispatch();
   const {
     register,
@@ -31,15 +31,7 @@ const Login = () => {
   });
 
   const onSubmit = (data: SignUpType, errors: any) => {
-    console.log(errors);
-    console.log('123');
-
-    console.log(data);
-
-    loginPost(data).then((response: any) => {
-      dispatch(loggedIn(response.User));
-      console.log(response.User);
-    });
+    loginPost(data);
   };
 
   return (

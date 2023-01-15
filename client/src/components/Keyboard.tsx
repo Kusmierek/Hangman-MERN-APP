@@ -7,6 +7,7 @@ interface StateProps {
   word: String;
   alphabet: String[];
   disabled: String[];
+  finished: boolean;
 }
 
 const Keyboard = () => {

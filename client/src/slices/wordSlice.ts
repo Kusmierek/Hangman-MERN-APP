@@ -4,6 +4,7 @@ export interface wordType {
   word: string;
   alphabet: string[];
   disabled: string[];
+  finished: boolean;
 }
 
 const initialState: wordType = {
@@ -45,6 +46,7 @@ const initialState: wordType = {
     'ś',
   ],
   disabled: [],
+  finished: false,
 };
 
 const hangmanGameWordSlice = createSlice({

@@ -9,11 +9,14 @@ import {
 } from '../slices/wordSlice';
 import { useEffect, useMemo, useState } from 'react';
 import { randomWordGet } from '../server/RandomWord';
+import { loginType } from '../slices/logginSlice';
+import { useScore } from '../server/PostScore';
 
 interface StateProps {
   word: string;
   alphabet: string[];
   disabled: string[];
+  finished: boolean;
 }
 
 const Hangman = () => {
@@ -21,30 +24,19 @@ const Hangman = () => {
     (state) => state.hangmanGameWord
   );
   const { catid } = useParams();
+  const loginState = useSelector<StateType, loginType>(
+    (state) => state.persistedReducer.login
+  );
+  const { scorePost } = useScore();
 
   const dispatch = useDispatch();
-  const randomWord = 'ANGLIA';
 
   useEffect(() => {
     randomWordGet(catid).then((response: any) => {
-      console.log(response);
       dispatch(resetDisabled());
       dispatch(assignWord(response.Word[0].name.toUpperCase()));
     });
   }, [dispatch]);
-
-  const maskedWord = useMemo(() => {
-    const state = gameState.word
-      .split('')
-      .map((letter) =>
-        gameState.disabled.includes(letter) || letter == ' ' ? letter : '_'
-      )
-      .join(' ');
-    if (!state.includes('_') && state != '') {
-      console.log('koniec gry');
-    }
-    return state;
-  }, [gameState.word, gameState.disabled]);
 
   const errors = useMemo(() => {
     return gameState.disabled.filter(
@@ -56,6 +48,22 @@ const Hangman = () => {
     return 7 + gameState.word.length - errors;
   }, [gameState.word, gameState.disabled]);
   console.log(score);
+
+  const maskedWord = useMemo(() => {
+    const state = gameState.word
+      .split('')
+      .map((letter) =>
+        gameState.disabled.includes(letter) || letter == ' ' ? letter : '_'
+      )
+      .join(' ');
+    if (!state.includes('_') && state != '') {
+      if (loginState.isLogged) {
+        console.log(loginState);
+        scorePost(catid, score, loginState.user._id);
+      }
+    }
+    return state;
+  }, [gameState.word, gameState.disabled]);
 
   return (
     <div className="h-1/2">
