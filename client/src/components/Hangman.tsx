@@ -1,7 +1,14 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { StateType } from '../store';
-import { assignWord, addDisabled, wordType } from '../slices/wordSlice';
-import { useEffect, useMemo } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import {
+  assignWord,
+  addDisabled,
+  wordType,
+  resetDisabled,
+} from '../slices/wordSlice';
+import { useEffect, useMemo, useState } from 'react';
+import { randomWordGet } from '../server/RandomWord';
 
 interface StateProps {
   word: string;
@@ -13,30 +20,42 @@ const Hangman = () => {
   const gameState = useSelector<StateType, StateProps>(
     (state) => state.hangmanGameWord
   );
-
-  console.log(gameState);
+  const { catid } = useParams();
 
   const dispatch = useDispatch();
   const randomWord = 'ANGLIA';
 
   useEffect(() => {
-    dispatch(assignWord(randomWord));
-  }, [dispatch, randomWord]);
+    randomWordGet(catid).then((response: any) => {
+      console.log(response);
+      dispatch(resetDisabled());
+      dispatch(assignWord(response.Word[0].name.toUpperCase()));
+    });
+  }, [dispatch]);
 
   const maskedWord = useMemo(() => {
-    return gameState.word
+    const state = gameState.word
       .split('')
       .map((letter) =>
         gameState.disabled.includes(letter) || letter == ' ' ? letter : '_'
       )
       .join(' ');
+    if (!state.includes('_') && state != '') {
+      console.log('koniec gry');
+    }
+    return state;
   }, [gameState.word, gameState.disabled]);
 
   const errors = useMemo(() => {
     return gameState.disabled.filter(
       (x) => !gameState.word.slice('').includes(x)
     ).length;
-  }, [gameState.disabled, gameState.word]);
+  }, [gameState.word, gameState.disabled]);
+
+  const score = useMemo(() => {
+    return 7 + gameState.word.length - errors;
+  }, [gameState.word, gameState.disabled]);
+  console.log(score);
 
   return (
     <div className="h-1/2">
@@ -62,6 +81,7 @@ const Hangman = () => {
       <div className="flex h-1/4 items-center justify-center">
         <p className="text-6xl text-blue-300 w-auto">{maskedWord}</p>
       </div>
+      {/* {console.log(score)} */}
     </div>
   );
 };

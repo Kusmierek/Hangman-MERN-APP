@@ -48,11 +48,11 @@ export const createUser = (req, res) => {
   });
   return postUser
     .save()
-    .then((newCategory) => {
+    .then((newUser) => {
       return res.status(201).json({
         success: true,
         message: 'New user created successfully',
-        User: newCategory,
+        User: newUser,
       });
     })
     .catch((error) => {

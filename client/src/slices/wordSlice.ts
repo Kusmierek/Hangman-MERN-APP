@@ -35,6 +35,14 @@ const initialState: wordType = {
     'B',
     'N',
     'M',
+    'Ą',
+    'Ł',
+    'Ż',
+    'Ź',
+    'Ę',
+    'Ć',
+    'Ó',
+    'ś',
   ],
   disabled: [],
 };
@@ -49,9 +57,13 @@ const hangmanGameWordSlice = createSlice({
     addDisabled: (state, action) => {
       state.disabled = [...state.disabled, action.payload];
     },
+    resetDisabled: (state) => {
+      state.disabled = [];
+    },
   },
 });
 
-export const { assignWord, addDisabled } = hangmanGameWordSlice.actions;
+export const { assignWord, addDisabled, resetDisabled } =
+  hangmanGameWordSlice.actions;
 
 export default hangmanGameWordSlice.reducer;

@@ -33,22 +33,25 @@ const Keyboard = () => {
   return (
     <div className="w-full h-1/2">
       <div className="keyboard-row">
-        {gameState.alphabet.slice(0, 10).map((key: String, i) => {
+        {gameState.alphabet.slice(0, 13).map((key, i) => {
           return (
             <button
-              className="button-key"
               key={i}
               onClick={(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                 dispatch(addDisabled(key))
               }
             >
-              <kbd className="keyboard-el">{key}</kbd>
+              {gameState.disabled.includes(key) ? (
+                <kbd className="keyboard-el-dis">{key}</kbd>
+              ) : (
+                <kbd className="keyboard-el">{key}</kbd>
+              )}
             </button>
           );
         })}
       </div>
       <div className="keyboard-row">
-        {gameState.alphabet.slice(10, 19).map((key, i) => {
+        {gameState.alphabet.slice(13, 24).map((key, i) => {
           return (
             <button
               key={i}
@@ -56,13 +59,17 @@ const Keyboard = () => {
                 dispatch(addDisabled(key))
               }
             >
-              <kbd className="keyboard-el">{key}</kbd>
+              {gameState.disabled.includes(key) ? (
+                <kbd className="keyboard-el-dis">{key}</kbd>
+              ) : (
+                <kbd className="keyboard-el">{key}</kbd>
+              )}
             </button>
           );
         })}
       </div>
       <div className="keyboard-row">
-        {gameState.alphabet.slice(19, 26).map((key, i) => {
+        {gameState.alphabet.slice(24, 34).map((key, i) => {
           return (
             <button
               key={i}
@@ -70,7 +77,11 @@ const Keyboard = () => {
                 dispatch(addDisabled(key))
               }
             >
-              <kbd className="keyboard-el">{key}</kbd>
+              {gameState.disabled.includes(key) ? (
+                <kbd className="keyboard-el-dis">{key}</kbd>
+              ) : (
+                <kbd className="keyboard-el">{key}</kbd>
+              )}
             </button>
           );
         })}

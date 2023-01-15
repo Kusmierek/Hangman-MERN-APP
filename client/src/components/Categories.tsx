@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export interface category {
-  id: String;
+  _id: String;
   name: String;
   translation: String;
 }
@@ -26,7 +26,7 @@ const Categories = () => {
     <div className="flex  flex-wrap gap-4 rounded m-10 bg">
       {categories.map((el, i) => (
         <Link
-          to="/game"
+          to={`/game/${el._id}`}
           key={i}
           className="w-1/5 h-80 bg-blue-300 grow rounded-lg"
         >

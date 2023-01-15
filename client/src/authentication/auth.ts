@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
-import { StateType } from '../store';
-import { loggedIn, loginType, loggedOut } from '../slices/logginSlice';
 
 const API_URL = 'http://localhost:3000/api/authentication/';
 

@@ -99,3 +99,22 @@ export const deleteWord = (req, res) => {
       })
     );
 };
+
+export const RandomWord = async (req, res) => {
+  const id = mongoose.Types.ObjectId(req.params.catid);
+  Word.aggregate([{ $match: { category_id: id } }, { $sample: { size: 1 } }])
+    .then((singleWord) => {
+      res.status(200).json({
+        success: true,
+        message: 'singleWord',
+        Word: singleWord,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: 'Server error',
+        error: err.message,
+      });
+    });
+};
