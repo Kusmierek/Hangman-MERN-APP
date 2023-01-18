@@ -6,7 +6,7 @@ export const getAllWords = (req, res) => {
     .then((allWords) => {
       return res.status(200).json({
         success: true,
-        message: 'All Users',
+        message: 'All Words',
         Word: allWords,
       });
     })
@@ -84,14 +84,17 @@ export const updateWord = (req, res) => {
 };
 
 export const deleteWord = (req, res) => {
-  const id = req.params.wordid;
-  User.findByIdAndRemove(id)
+  const id = req.params.id;
+  // console.log('delete');
+  Word.findByIdAndRemove(id)
     .exec()
-    .then(() =>
+    .then(() => {
       res.status(204).json({
         success: true,
-      })
-    )
+        message: 'word deleted',
+      });
+      console.log('usunieto');
+    })
     .catch((err) =>
       res.status(500).json({
         success: false,
@@ -104,10 +107,47 @@ export const RandomWord = async (req, res) => {
   const id = mongoose.Types.ObjectId(req.params.catid);
   Word.aggregate([{ $match: { category_id: id } }, { $sample: { size: 1 } }])
     .then((singleWord) => {
+      console.log('clik');
       res.status(200).json({
         success: true,
         message: 'singleWord',
         Word: singleWord,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: 'Server error',
+        error: err.message,
+      });
+    });
+};
+
+export const wordByCategory = async (req, res) => {
+  console.log('clik');
+  Word.aggregate([
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category_id',
+        foreignField: '_id',
+        as: 'ref',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        translation: 1,
+        category: '$ref.name',
+      },
+    },
+  ])
+    .then((words) => {
+      res.status(200).json({
+        success: true,
+        message: 'words',
+        Words: words,
       });
     })
     .catch((err) => {

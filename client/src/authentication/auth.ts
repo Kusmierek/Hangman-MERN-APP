@@ -30,9 +30,6 @@ export const registerPost = ({ username, email, password }: SignUpType) => {
 };
 
 export const useLogin = () => {
-  const loginState = useSelector<StateType, loginType>(
-    (state) => state.persistedReducer.login
-  );
   const dispatch = useDispatch();
 
   const loginPost = useCallback(

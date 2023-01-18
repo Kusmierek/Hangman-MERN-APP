@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import reactLogo from './assets/react.svg';
+import Admin from './components/Admin';
+import AdminWords from './components/AdminWords';
 import Categories from './components/Categories';
 import Game from './components/Game';
 import Login from './components/Login';
@@ -19,6 +21,8 @@ function App() {
         <Route path="/game/:catid" element={<Game />} />
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/words" element={<AdminWords />} />
       </Routes>
     </div>
   );

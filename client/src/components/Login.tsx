@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { StateType } from '../store';
 import { loggedIn, loginType } from '../slices/logginSlice';
 import { SignUpType, useLogin } from '../authentication/auth';
+import ErrorAlert from './ErrorAlert';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Email is invalid').required('Email is required'),
@@ -27,6 +28,7 @@ const Login = () => {
     reset,
     formState: { errors },
   } = useForm<SignUpType>({
+    mode: 'onBlur',
     resolver: yupResolver(validationSchema),
   });
 
@@ -44,6 +46,7 @@ const Login = () => {
           <div className="mb-2">
             <label className="form-label">Email</label>
             <input type="email" className="form-input" {...register('email')} />
+            {errors.email && <ErrorAlert errorInfo={errors.email.message} />}
           </div>
           <div className="mb-2">
             <label className="form-label">Password</label>
@@ -52,6 +55,9 @@ const Login = () => {
               className="form-input"
               {...register('password')}
             />
+            {errors.password && (
+              <ErrorAlert errorInfo={errors.password.message} />
+            )}
           </div>
           <div className="mt-6">
             <button className="form-button">Login</button>

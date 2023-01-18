@@ -100,3 +100,13 @@ export const deleteUser = (req, res) => {
       })
     );
 };
+
+// export const topUser = (req, res) => {
+//   User.aggregate([]).then((singleWord) => {
+//     res.status(200).json({
+//       success: true,
+//       message: 'singleWord',
+//       Word: singleWord,
+//     });
+//   });
+// };

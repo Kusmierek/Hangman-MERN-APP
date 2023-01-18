@@ -1,16 +1,18 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { StateType } from '../store';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   assignWord,
   addDisabled,
   wordType,
-  resetDisabled,
+  finishGame,
+  resetAll,
 } from '../slices/wordSlice';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { randomWordGet } from '../server/RandomWord';
 import { loginType } from '../slices/logginSlice';
 import { useScore } from '../server/PostScore';
+import Swal from 'sweetalert2';
 
 interface StateProps {
   word: string;
@@ -23,17 +25,17 @@ const Hangman = () => {
   const gameState = useSelector<StateType, StateProps>(
     (state) => state.hangmanGameWord
   );
-  const { catid } = useParams();
   const loginState = useSelector<StateType, loginType>(
     (state) => state.persistedReducer.login
   );
-  const { scorePost } = useScore();
-
   const dispatch = useDispatch();
+  const { catid } = useParams();
+  const { scorePost } = useScore();
+  const navigate = useNavigate();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    dispatch(resetAll());
     randomWordGet(catid).then((response: any) => {
-      dispatch(resetDisabled());
       dispatch(assignWord(response.Word[0].name.toUpperCase()));
     });
   }, [dispatch]);
@@ -45,7 +47,12 @@ const Hangman = () => {
   }, [gameState.word, gameState.disabled]);
 
   const score = useMemo(() => {
-    return 7 + gameState.word.length - errors;
+    if (errors > 6) {
+      dispatch(finishGame);
+      return 0;
+    } else {
+      return 7 + gameState.word.length - errors;
+    }
   }, [gameState.word, gameState.disabled]);
   console.log(score);
 
@@ -56,17 +63,39 @@ const Hangman = () => {
         gameState.disabled.includes(letter) || letter == ' ' ? letter : '_'
       )
       .join(' ');
-    if (!state.includes('_') && state != '') {
-      if (loginState.isLogged) {
-        console.log(loginState);
-        scorePost(catid, score, loginState.user._id);
-      }
+    if (!state.includes('_') && state != '' && gameState.finished !== true) {
+      dispatch(finishGame);
+      Swal.fire({
+        title: `Your score is ${score}`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Play Again?',
+        cancelButtonText: 'Choose category',
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+          if (loginState.isLogged) {
+            console.log(loginState.user);
+            scorePost(catid, score, loginState.user.user._id);
+          }
+        } else {
+          navigate(`/categories`);
+          if (loginState.isLogged) {
+            scorePost(catid, score, loginState.user.user_id);
+          }
+          dispatch(resetAll());
+        }
+      });
     }
     return state;
   }, [gameState.word, gameState.disabled]);
 
   return (
     <div className="h-1/2">
+      {/* {console.log(loginState.user)} */}
       <div className="flex h-3/4 items-center justify-center">
         <svg height="320" width="250" className="figure-container">
           {/* <!-- Rod --> */}
@@ -89,7 +118,6 @@ const Hangman = () => {
       <div className="flex h-1/4 items-center justify-center">
         <p className="text-6xl text-blue-300 w-auto">{maskedWord}</p>
       </div>
-      {/* {console.log(score)} */}
     </div>
   );
 };

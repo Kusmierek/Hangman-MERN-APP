@@ -10,6 +10,7 @@ export const useScore = () => {
   const scorePost = useCallback(
     async (category_id: string | undefined, score: number, user_id: string) => {
       try {
+        console.log(category_id, score, user_id);
         const response = await axios.post(API_URL, {
           category_id,
           score,

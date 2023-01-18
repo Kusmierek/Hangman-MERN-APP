@@ -25,3 +25,43 @@ export const createGame = (req, res) => {
       });
     });
 };
+
+export const topGamers = async (req, res) => {
+  Game.aggregate([
+    {
+      $group: {
+        _id: '$user_id',
+        score: { $sum: '$score' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'users',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'ref',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: '$ref.username',
+        score: 1,
+      },
+    },
+  ])
+    .then((topGamers) => {
+      res.status(200).json({
+        success: true,
+        message: 'topGamers',
+        topGamers: topGamers,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: 'Server error',
+        error: err.message,
+      });
+    });
+};

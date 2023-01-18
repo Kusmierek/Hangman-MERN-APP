@@ -6,6 +6,7 @@ import { registerPost } from '../authentication/auth';
 import { useSelector, useDispatch } from 'react-redux';
 import { StateType } from '../store';
 import { loggedIn, loginType } from '../slices/logginSlice';
+import ErrorAlert from './ErrorAlert';
 
 const validationSchema = yup.object().shape({
   username: yup.string().required('Name is required').min(3).max(16),
@@ -33,6 +34,7 @@ const SignUp = () => {
     reset,
     formState: { errors },
   } = useForm<SignUpType>({
+    mode: 'onBlur',
     resolver: yupResolver(validationSchema),
   });
 
@@ -48,9 +50,6 @@ const SignUp = () => {
       console.log(userState);
     });
   };
-
-  console.log(errors);
-  console.log(userState);
 
   return (
     <div className="flex flex-col items-center sign-up pt-6 sm:justify-center sm:pt-0 ">
@@ -79,6 +78,9 @@ const SignUp = () => {
                 {...register('username')}
               />
             </div>
+            {errors.username && (
+              <ErrorAlert errorInfo={errors.username.message} />
+            )}
           </div>
           <div className="mt-4">
             <label htmlFor="email" className="form-label">
@@ -91,6 +93,7 @@ const SignUp = () => {
                 {...register('email')}
               />
             </div>
+            {errors.email && <ErrorAlert errorInfo={errors.email.message} />}
           </div>
           <div className="mt-4">
             <label htmlFor="password" className="form-label">
@@ -103,6 +106,9 @@ const SignUp = () => {
                 {...register('password')}
               />
             </div>
+            {errors.password && (
+              <ErrorAlert errorInfo={errors.password.message} />
+            )}
           </div>
           <div className="mt-4">
             <label htmlFor="password_confirmation" className="form-label">
@@ -115,6 +121,9 @@ const SignUp = () => {
                 {...register('confirmPassword')}
               />
             </div>
+            {errors.confirmPassword && (
+              <ErrorAlert errorInfo={errors.confirmPassword.message} />
+            )}
           </div>
           <div className="flex items-center mt-4">
             <button className="form-button">Register</button>
