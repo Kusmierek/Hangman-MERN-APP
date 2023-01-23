@@ -79,12 +79,22 @@ const Hangman = () => {
           window.location.reload();
           if (loginState.isLogged) {
             console.log(loginState.user);
-            scorePost(catid, score, loginState.user.user._id);
+            scorePost(
+              catid,
+              score,
+              loginState.user.user._id,
+              loginState.user.token
+            );
           }
         } else {
           navigate(`/categories`);
           if (loginState.isLogged) {
-            scorePost(catid, score, loginState.user.user_id);
+            scorePost(
+              catid,
+              score,
+              loginState.user.user_id,
+              loginState.user.token
+            );
           }
           dispatch(resetAll());
         }

@@ -1,49 +1,93 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDeleteWord } from '../server/deleteWord';
+import AdminWordEdit from './AdminWordEdit';
+import { category } from './Categories';
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { wordType } from '../slices/wordSlice';
 
 export interface wordAdmin {
   _id: string;
   name: string;
   translation: string;
-  category: string[];
+  category: string | string[];
 }
 
 const AdminWords = () => {
   const [words, setWords] = useState<Array<wordAdmin>>([]);
-  const fetchRequest = useCallback(() => {
-    fetch('http://127.0.0.1:3000/api/word/table')
-      .then((res) => res.json())
-      .then((data) => {
-        setWords(data.Words);
-        console.log(data);
-        console.log(words);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, []);
-
+  const [categories, setCategories] = useState<category[]>([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalData, setModalData] = useState({});
+  const { register, watch } = useForm({
+    defaultValues: {
+      name: '',
+    },
+  });
+  const watchName = watch('name');
   const { deleteWord } = useDeleteWord();
+  const fetchRequest = useCallback(
+    (name: string = '') => {
+      console.log(name);
+      console.log({ name: `${name}` });
+
+      axios
+        .get('http://127.0.0.1:3000/api/word/find/reg', {
+          params: { name },
+        })
+        .then((response) => {
+          console.log(response.data.Word);
+          setWords(response.data.Word);
+          response;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      fetch('http://127.0.0.1:3000/api/cat')
+        .then((res) => res.json())
+        .then((data) => {
+          setCategories(data.Category);
+          console.log(data);
+          console.log(categories);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    },
+    [modalIsOpen, setModalIsOpen]
+  );
+
   useEffect(() => {
-    fetchRequest();
-  }, []);
+    console.log('klik');
+    console.log(watchName);
+
+    fetchRequest(watchName);
+  }, [modalIsOpen, setModalIsOpen, watchName]);
+
+  const handleChangeModal = useCallback(
+    (x: Record<string, any>) => {
+      setModalData(x);
+      console.log(x);
+      setModalIsOpen(true);
+      console.log(modalIsOpen);
+    },
+    [modalIsOpen, modalData, fetchRequest]
+  );
 
   const wordsRow = useMemo(() => {
     return words.map((x) => {
       return (
-        <tr
-          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-          key={x._id}
-        >
+        <tr className="bg-white border-b" key={x._id}>
           <td className="px-6 py-4">{x.name}</td>
           <td className="px-6 py-4">{x.translation}</td>
           <td className="px-6 py-4">{x.category[0]}</td>
-          <td className="px-6 py-4">
+          <td className="px-6 py-4 flex justify-start">
             <button
               type="button"
               className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2"
-              onClick={() => {
-                deleteWord(x._id).then(fetchRequest);
+              onClick={async () => {
+                await deleteWord(x._id);
+                await fetchRequest('');
               }}
             >
               Delete
@@ -51,7 +95,12 @@ const AdminWords = () => {
             <button
               type="button"
               className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2"
-              onClick={() => {}}
+              onClick={() => {
+                fetchRequest('');
+                handleChangeModal(x);
+              }}
+              data-modal-target="defaultModal"
+              data-modal-toggle="defaultModal"
             >
               Update
             </button>
@@ -62,11 +111,9 @@ const AdminWords = () => {
   }, [words]);
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div className="pb-4 bg-white dark:bg-gray-900">
-        <label htmlFor="table-search" className="sr-only">
-          Search
-        </label>
+    <div className="relative overflow-x-auto shadow-md sm:rounded-lg flex flex-col items-center  ">
+      <div className="p-6 bg-white w-9/12 rounded mt-4">
+        <label className="sr-only">Search</label>
         <div className="relative mt-1">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
@@ -84,11 +131,12 @@ const AdminWords = () => {
             id="table-search"
             className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Search for items"
+            {...register('name')}
           />
         </div>
       </div>
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <table className="w-9/12 text-sm text-left rounded">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="px-6 py-3">
               Name
@@ -99,11 +147,22 @@ const AdminWords = () => {
             <th scope="col" className="px-6 py-3">
               Category
             </th>
-            <th>actions</th>
+            <th scope="col" className="px-6 py-3">
+              actions
+            </th>
           </tr>
         </thead>
         <tbody>{wordsRow}</tbody>
       </table>
+      {modalIsOpen && (
+        <AdminWordEdit
+          isOpen={modalIsOpen}
+          modalData={modalData}
+          setModal={setModalIsOpen}
+          categories={categories}
+          fetchEdit={fetchRequest}
+        />
+      )}
     </div>
   );
 };

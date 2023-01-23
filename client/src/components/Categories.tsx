@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export interface category {
-  _id: String;
-  name: String;
-  translation: String;
+  _id: string;
+  name: string;
+  translation: string;
 }
 
 const Categories = () => {

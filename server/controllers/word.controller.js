@@ -64,7 +64,7 @@ export const createWord = (req, res) => {
 };
 
 export const updateWord = (req, res) => {
-  const id = req.params.wordid;
+  const id = req.params.id;
   const updateObject = req.body;
   Word.update({ _id: id }, { $set: updateObject })
     .exec()
@@ -98,7 +98,7 @@ export const deleteWord = (req, res) => {
     .catch((err) =>
       res.status(500).json({
         success: false,
-        message: 'Cannot find a wordd.',
+        message: 'Cannot find a word',
       })
     );
 };
@@ -124,7 +124,6 @@ export const RandomWord = async (req, res) => {
 };
 
 export const wordByCategory = async (req, res) => {
-  console.log('clik');
   Word.aggregate([
     {
       $lookup: {
@@ -148,6 +147,44 @@ export const wordByCategory = async (req, res) => {
         success: true,
         message: 'words',
         Words: words,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: 'Server error',
+        error: err.message,
+      });
+    });
+};
+
+export const getWordReg = async (req, res) => {
+  const { name = '' } = req.query;
+  console.log(req.params);
+  Word.aggregate([
+    { $match: { name: { $regex: name, $options: 'i' } } },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category_id',
+        foreignField: '_id',
+        as: 'ref',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        translation: 1,
+        category: '$ref.name',
+      },
+    },
+  ])
+    .then((allWords) => {
+      return res.status(200).json({
+        success: true,
+        message: 'all Words with regex',
+        Word: allWords,
       });
     })
     .catch((err) => {

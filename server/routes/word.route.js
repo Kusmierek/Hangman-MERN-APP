@@ -4,6 +4,7 @@ import {
   deleteWord,
   getAllWords,
   getOneWord,
+  getWordReg,
   RandomWord,
   updateWord,
   wordByCategory,
@@ -18,5 +19,6 @@ wordRouter.get('/:id', getOneWord);
 wordRouter.put('/:id', updateWord);
 wordRouter.delete('/:id', deleteWord);
 wordRouter.get('/random/:catid', RandomWord);
+wordRouter.get('/find/reg', getWordReg);
 
 export default wordRouter;
