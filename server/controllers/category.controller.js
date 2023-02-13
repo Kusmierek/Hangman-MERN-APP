@@ -85,7 +85,7 @@ export const updateCategory = (req, res) => {
 
 export const deleteCategory = (req, res) => {
   const id = req.params.catid;
-  User.findByIdAndRemove(id)
+  Category.findByIdAndRemove(id)
     .exec()
     .then(() =>
       res.status(204).json({
@@ -98,4 +98,33 @@ export const deleteCategory = (req, res) => {
         message: 'Cannot find a category',
       })
     );
+};
+
+export const getCatReg = async (req, res) => {
+  const { name = '' } = req.query;
+  console.log(req.params);
+  Category.aggregate([
+    { $match: { name: { $regex: name, $options: 'i' } } },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        translation: 1,
+      },
+    },
+  ])
+    .then((getAllCategories) => {
+      return res.status(200).json({
+        success: true,
+        message: 'all categories with regex',
+        getCatReg: getAllCategories,
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: 'Server Alle',
+        error: err.message,
+      });
+    });
 };

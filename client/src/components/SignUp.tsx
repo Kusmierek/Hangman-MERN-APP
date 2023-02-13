@@ -1,8 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { SignUpType } from '../authentication/auth';
+import { SignUpType, useRegister } from '../authentication/auth';
 import * as yup from 'yup';
-import { registerPost } from '../authentication/auth';
 import { useSelector, useDispatch } from 'react-redux';
 import { StateType } from '../store';
 import { loggedIn, loginType } from '../slices/logginSlice';
@@ -23,6 +22,7 @@ const validationSchema = yup.object().shape({
 });
 
 const SignUp = () => {
+  const { registerPost } = useRegister();
   const userState = useSelector<StateType, loginType>(
     (state) => state.persistedReducer.login
   );
@@ -46,8 +46,6 @@ const SignUp = () => {
 
     registerPost(data).then((response: any) => {
       dispatch(loggedIn(response.User));
-      console.log(response.User);
-      console.log(userState);
     });
   };
 

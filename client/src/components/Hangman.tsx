@@ -63,7 +63,10 @@ const Hangman = () => {
         gameState.disabled.includes(letter) || letter == ' ' ? letter : '_'
       )
       .join(' ');
-    if (!state.includes('_') && state != '' && gameState.finished !== true) {
+    if (
+      (!state.includes('_') && state != '' && gameState.finished !== true) ||
+      (gameState.finished !== true && score == 0)
+    ) {
       dispatch(finishGame);
       Swal.fire({
         title: `Your score is ${score}`,

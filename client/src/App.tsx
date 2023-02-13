@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import reactLogo from './assets/react.svg';
 import Admin from './components/Admin';
+import AdminCategories from './components/AdminCategories';
 import AdminWords from './components/AdminWords';
 import Categories from './components/Categories';
 import Game from './components/Game';
@@ -23,6 +24,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/words" element={<AdminWords />} />
+        <Route path="/admin/cat" element={<AdminCategories />} />
       </Routes>
     </div>
   );
